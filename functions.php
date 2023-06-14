@@ -42,5 +42,6 @@ add_action( 'wp_enqueue_scripts', 'add_theme_scripts' );
 // Cleanup unneeded CSS and JS
 include_once( 'inc\cleanup.php' );
 
-// Require the Bootstrap walker class
-require_once('classes\class-bootstrap-walker.php');
+// Require the custom walkers
+require_once('classes\class-esb-cat-walker.php');
+require_once('classes\class-esb-nav-walker.php');

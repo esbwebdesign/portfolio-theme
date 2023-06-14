@@ -14,5 +14,45 @@
  */
 
 get_header();
+
+?>
+		<main>
+			<div class="container mt-3">
+				<div class="row">
+					<h1 class="my-3">All Posts</h1>
+					<div class="col-12 col-lg-9">
+<?php
+
+// The Loop
+if ( have_posts() ) {
+	while ( have_posts() ) {
+		the_post(); 
+?>
+						<div class="card mb-3 esb-post-card">
+							<div class="card-body">
+								<h3><?php the_title(); ?></h3>
+								<?php the_excerpt(); ?>
+								<p><a href="<?php echo get_permalink( get_the_ID() ); ?>">Read More...</a></p>
+							</div>
+						</div>
+<?php
+	}
+}
+
+?>
+					</div>
+					<div class="col-12 col-lg-3">
+						<div class="card mb-3">
+							<div class="card-body">
+<?php get_sidebar(); ?>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+		</main>
+<?php
+
 get_footer();
+
 ?>

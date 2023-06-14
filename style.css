@@ -3,3 +3,16 @@
 /*
 Theme Name: ESB Portfolio
 Author: Elizabeth Sullivan-Burton
+*/
+
+.no-bullets {
+	list-style: none;
+}
+
+.no-underline {
+	text-decoration: none;
+}
+
+.no-underline:hover {
+	font-weight: bold;
+}
