@@ -56,7 +56,6 @@ class Esb_Nav_Walker extends Walker_Nav_Menu {
 			if ( $args->walker->has_children ) {
 				$li_classes[] = 'dropdown';
 				$a_classes[] = 'dropdown-toggle';
-				// $a_controls_insert = ' id="dropdown-id-' . $data_object->ID . '" role="button" data-bs-toggle="dropdown" aria-expanded="false"';
 			}
 		} else {
 			$li_classes = [];

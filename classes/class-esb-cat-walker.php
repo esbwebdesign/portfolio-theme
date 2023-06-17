@@ -52,7 +52,7 @@ class Esb_Cat_Walker extends Walker_Category {
 		// Create the taxonomy url
 		$cat_link = get_site_url() . '/' . $data_object->taxonomy . '/' . $data_object->slug;
 		// Create the link
-		$a = '<a href="' . $cat_link . '" class="no-underline link-dark">' . $data_object->name . ' (' . $data_object->count . ')' . '</a>';
+		$a = '<a href="' . $cat_link . '" class="text-decoration-none link-dark">' . $data_object->name . ' (' . $data_object->count . ')' . '</a>';
 		
 		// Output the opening tag
 		$output .= $n . $indent . $li . $a;

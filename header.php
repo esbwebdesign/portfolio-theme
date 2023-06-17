@@ -59,3 +59,6 @@ if ( strlen(get_site_icon_url()) > 0 ) {
 				</div>
 			</div>
 		</nav>
+		<main>
+			<div class="container mt-3">
+				<div class="row">

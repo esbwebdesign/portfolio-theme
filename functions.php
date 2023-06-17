@@ -39,9 +39,27 @@ function add_theme_scripts() {
 
 add_action( 'wp_enqueue_scripts', 'add_theme_scripts' );
 
-// Cleanup unneeded CSS and JS
-include_once( 'inc\cleanup.php' );
+// Bring in constants for use throughout code
+// This must go before subsequent include/requires because it defines the __ROOT__ constant
+require_once( dirname(__FILE__) . '\inc\constant.php' );
 
-// Require the custom walkers
-require_once('classes\class-esb-cat-walker.php');
-require_once('classes\class-esb-nav-walker.php');
+$include_list = [
+	// Cleanup unneeded CSS and JS
+	__ROOT__ . '\inc\cleanup.php' 
+];
+
+$require_list = [
+	// Custom walkers
+	__ROOT__ . '\classes\class-esb-cat-walker.php',
+	__ROOT__ . '\classes\class-esb-nav-walker.php',
+	// Formatting functions
+	__ROOT__ . '\inc\format.php'
+];
+
+foreach ( $include_list as $dependency ) {
+	require_once($dependency);
+}
+
+foreach ( $require_list as $dependency ) {
+	require_once($dependency);
+}
