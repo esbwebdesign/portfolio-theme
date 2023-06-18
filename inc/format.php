@@ -28,7 +28,7 @@ function format_post_card(int $base_indent = 0, bool $preview = false) : string 
 	
 	$output = '';
 	$output .= 
-		'<div class="card mb-3 esb-post-card">' . N . 
+		'<div class="card mb-3">' . N . 
 		indent($base_indent + 1) . '<div class="card-body">' . N . 
 		indent($base_indent + 2) . '<h3 class="mb-0">' . get_the_title() . '</h3>' . N . 
 		indent($base_indent + 2) . '<p class="text-muted mb-0">' . get_the_date('F j, Y') . '</p>' . N . 

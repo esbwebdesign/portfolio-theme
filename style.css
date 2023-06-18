@@ -8,3 +8,15 @@ Author: Elizabeth Sullivan-Burton
 .no-bullets {
 	list-style: none;
 }
+
+.comments .is-author {
+	background-color: #cfe2ff;
+}
+
+.comments .is-unapproved {
+	background-color: #ffe5d0;
+}
+
+.comments .date {
+	font-size: 0.83rem;
+}

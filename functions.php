@@ -50,16 +50,29 @@ $include_list = [
 
 $require_list = [
 	// Custom walkers
-	__ROOT__ . '\classes\class-esb-cat-walker.php',
 	__ROOT__ . '\classes\class-esb-nav-walker.php',
+	__ROOT__ . '\classes\class-esb-cat-walker.php',
+	__ROOT__ . '\classes\class-esb-comment-walker.php',
 	// Formatting functions
 	__ROOT__ . '\inc\format.php'
 ];
 
+// include files
 foreach ( $include_list as $dependency ) {
 	require_once($dependency);
 }
 
+// Require files
 foreach ( $require_list as $dependency ) {
 	require_once($dependency);
 }
+
+// Remove default website field from comment form
+// See https://developer.wordpress.org/reference/hooks/comment_form_default_fields/#comment-2565
+function wpdocs_remove_website_field( $fields ) {
+	unset( $fields['url'] );
+	unset( $fields['email'] );
+	return $fields;
+}
+
+add_filter( 'comment_form_default_fields', 'wpdocs_remove_website_field' );
