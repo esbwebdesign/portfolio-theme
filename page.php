@@ -17,7 +17,7 @@ if ( have_posts() ) {
 					<div class="col-12 col-lg-9">
 						<div class="card mb-3">
 							<div class="card-body">
-								<?php echo get_the_content() . N; ?>
+								<?php echo the_content() . N; ?>
 							</div>
 						</div>
 					</div>

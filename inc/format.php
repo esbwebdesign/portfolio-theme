@@ -20,7 +20,7 @@ function format_post_card(int $base_indent = 0, bool $preview = false) : string 
 			indent($base_indent + 2) . '<p class="mt-3 mb-2">' . get_the_excerpt() . '</p>' . N . 
 			indent($base_indent + 2) . '<p><a href="' . get_permalink( get_the_ID() ) . '">Read More...</a></p>' . N;
 	} else {
-		$content = '<p>' . get_the_content() . '</p>' . N;
+		$content = '<p>' . the_content() . '</p>' . N;
 	}
 	
 	$tags = format_tags_inline( get_the_tags() );
