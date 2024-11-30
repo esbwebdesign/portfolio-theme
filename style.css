@@ -1,22 +1,8 @@
-@charset "UTF-8";
-
-/*
-Theme Name: ESB Portfolio
-Author: Elizabeth Sullivan-Burton
-*/
-
-.no-bullets {
-	list-style: none;
-}
-
-.comments .is-author {
-	background-color: #cfe2ff;
-}
-
-.comments .is-unapproved {
-	background-color: #ffe5d0;
-}
-
-.comments .date {
-	font-size: 0.83rem;
-}
+/**
+ * Theme Name:        ESB Web Design
+ * Description:       This is a revision of my personal site theme to use the block editor and other quality-of-life revisions.
+ * Version:           2.0
+ * Author:            Elizabeth Sullivan-Burton
+ * Author URI:        https://www.esbwebdesign.com
+ * Text Domain:       esb
+ */
