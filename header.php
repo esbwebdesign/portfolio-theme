@@ -14,17 +14,23 @@ declare(strict_types=1);
 
 $base_indent = 5;
 
-$main_menu = wp_nav_menu([
-	'menu' => 'Primary Menu',
-	'container' => false,
-	'container_class' => 'navbar navbar-expand-lg navbar-dark bg-dark',
-	'menu_class' => 'navbar-nav',
-	'items_wrap' => str_repeat( "\t", $base_indent ) . '<ul class="%2$s ms-auto">%3$s' . "\n" . str_repeat( "\t", $base_indent ) . '</ul>',
-	'walker' => new Esb_Nav_Walker(),
-	'echo' => false,
-	// Custom argument to help with indenting properly
-	'base_indent' => $base_indent + 1
-]);
+// The menu has to be named 'Primary Menu' for this to work--fix later
+$check_menu = wp_get_nav_menu_object('Primary Menu');
+if ( ! $check_menu || $check_menu->count === 0) {
+	$main_menu = '<ul class="navbar-nav ms-auto"></ul>';
+} else {
+	$main_menu = wp_nav_menu([
+		'menu' => 'Primary Menu',
+		'container' => false,
+		'container_class' => 'navbar navbar-expand-lg navbar-dark bg-dark',
+		'menu_class' => 'navbar-nav',
+		'items_wrap' => str_repeat( "\t", $base_indent ) . '<ul class="%2$s ms-auto">%3$s' . "\n" . str_repeat( "\t", $base_indent ) . '</ul>',
+		'walker' => new Esb_Nav_Walker(),
+		'echo' => false,
+		// Custom argument to help with indenting properly
+		'base_indent' => $base_indent + 1
+	]);
+}
 
 if ( strlen(get_site_icon_url()) > 0 ) {
 	$brand_img = ' <img src="' . get_site_icon_url() . '" alt="' . get_bloginfo('name') . ' logo" height="42px">';

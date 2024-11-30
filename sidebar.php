@@ -34,7 +34,7 @@ foreach ( $tag_array as $tag ) {
 		$tag_output .= ' ';
 	}
 	$tag_link = get_site_url() . '/tag/' . $tag->slug;
-	$a = '<a href="' . $tag_link . '" class="no-underline link-light">' . $tag->name . '</a>';
+	$a = '<a href="' . $tag_link . '" class="text-decoration-none link-light">' . $tag->name . '</a>';
 	$tag_output .= $n . str_repeat($t, $base_indent + 1) . '<span class="badge bg-secondary">' . $a . '</span>';
 }
 $tag_output .= $n . str_repeat($t, $base_indent);

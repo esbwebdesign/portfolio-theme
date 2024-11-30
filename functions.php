@@ -41,20 +41,20 @@ add_action( 'wp_enqueue_scripts', 'add_theme_scripts' );
 
 // Bring in constants for use throughout code
 // This must go before subsequent include/requires because it defines the __ROOT__ constant
-require_once( dirname(__FILE__) . '\inc\constant.php' );
+require_once( dirname(__FILE__) . '/inc/constant.php' );
 
 $include_list = [
 	// Cleanup unneeded CSS and JS
-	__ROOT__ . '\inc\cleanup.php' 
+	__ROOT__ . '/inc/cleanup.php' 
 ];
 
 $require_list = [
 	// Custom walkers
-	__ROOT__ . '\classes\class-esb-nav-walker.php',
-	__ROOT__ . '\classes\class-esb-cat-walker.php',
-	__ROOT__ . '\classes\class-esb-comment-walker.php',
+	__ROOT__ . '/classes/class-esb-nav-walker.php',
+	__ROOT__ . '/classes/class-esb-cat-walker.php',
+	__ROOT__ . '/classes/class-esb-comment-walker.php',
 	// Formatting functions
-	__ROOT__ . '\inc\format.php'
+	__ROOT__ . '/inc/format.php'
 ];
 
 // include files

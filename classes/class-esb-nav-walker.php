@@ -43,6 +43,11 @@ class Esb_Nav_Walker extends Walker_Nav_Menu {
 	// Start each element
 	public function start_el( &$output, $data_object, $depth = 0, $args = null, $current_object_id = 0 ) {
 		
+		// Cast $args as an object if it's an associative array
+		if ( is_array($args) ) {
+			$args = (object) $args;
+		}
+		
 		// Get spacing information
 		$spacing = $this->get_spacing($args, $depth);
 		// Convert spacing information into variables

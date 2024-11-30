@@ -68,7 +68,7 @@ if ( $show_comments	 ) {
 				indent(1) . '<label class="form-label" for="comment-body">Comment *</label>' . N .
 				indent(1) . '<textarea type="text" id="comment-body" class="form-control" name="comment" required="required" rows="4" maxlength="65525" required></textarea>' . N .
 				'</div>',
-			'comment_notes_before' => N . '<p>Your email will not be published, but can be seen by site administrators.</p>' . N,
+			'comment_notes_before' => N . '<p>We collect some information from your browser (such as IP address) to help with spam detection.  This information is visible to site administrators.  See our <a href="https://esbportfolio.com/privacy-policy/">Privacy Policy</a> here.</p><p>Comments are moderated, so there may be a delay before your comment appears.</p>' . N,
 			'class_submit' => 'btn btn-primary',
 			'title_reply_before' => '<p class="mb-0"><strong>',
 			'title_reply_after' => '</strong></p>' . N,

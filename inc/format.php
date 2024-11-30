@@ -125,7 +125,7 @@ function format_tags_inline( bool|array $tags ) : string {
 			}
 			
 			// Create the tag link
-			$a = '<a href="' . get_site_url() . '/tag/' . $tag->slug . '" class="no-underline link-light">' . $tag->name . '</a>';
+			$a = '<a href="' . get_site_url() . '/tag/' . $tag->slug . '" class="text-decoration-none link-light">' . $tag->name . '</a>';
 			
 			$output .= '<span class="badge bg-secondary">' . $a . '</span>';
 
