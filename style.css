@@ -1,8 +1,16 @@
 /**
- * Theme Name:        ESB Web Design
+ * Theme Name:        ESB Portfolio
  * Description:       This is a revision of my personal site theme to use the block editor and other quality-of-life revisions.
  * Version:           2.0
  * Author:            Elizabeth Sullivan-Burton
  * Author URI:        https://www.esbwebdesign.com
  * Text Domain:       esb
  */
+
+a.esb-hover-line-only {
+  text-decoration: none;
+}
+
+a.esb-hover-line-only:hover {
+  text-decoration: underline;
+}
