@@ -6,10 +6,10 @@ get_header();
 
 if ( have_posts() ) {
 	// If there are posts, create a Formatter object
-	$formatter = new Esb_Formatter();
+	$post_formatter = new Esb_Format_Post(new Esb_Html_Helper);
 	while ( have_posts() ) {
 		the_post();
-		echo $formatter->format_post(6, false);
+		echo $post_formatter->format_post(6);
 	}
 }
 

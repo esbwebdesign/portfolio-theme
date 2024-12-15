@@ -1,4 +1,9 @@
 <?php
+/**
+ * This file contains only functions related to setting up the theme.
+ * Any other functions that need to be loaded should be placed inside
+ * the /inc directory.
+ */
 
 declare(strict_types=1);
 
@@ -9,20 +14,21 @@ is launched.
 */
 
 // Import dependencies
-// I believe the puproses of the !function_exists is to make sure
-// these tasks only get performed once
 if (!function_exists('esb_dependency_setup')) {
     function esb_dependency_setup() {
-        
-        // List of files that must be required
-        $require_list = array(
+
+        // NOTE: It's possible to dynamically load files from a directory, but
+        // I've opted not to since that might make it harder to troubleshoot if
+        // a necessary file was removed from that directory.
+        $required_files = array(
+            get_stylesheet_directory() . '/classes/class-esb-format-post.php',
+            get_stylesheet_directory() . '/classes/class-esb-html-helper.php',
+            get_stylesheet_directory() . '/classes/class-esb-nav-walker.php',
             get_stylesheet_directory() . '/inc/constant.php',
-            // get_stylesheet_directory() . '/inc/format.php'
-            get_stylesheet_directory() . '/classes/class-esb-formatter.php'
         );
         
         // Require files
-        foreach ( $require_list as $dependency ) {
+        foreach ($required_files as $dependency) {
             require_once($dependency);
         }
     }
@@ -35,8 +41,9 @@ if (!function_exists('esb_theme_setup')) {
     function esb_theme_setup() {
 		// Let Wordpress manage site title
 		add_theme_support( 'title-tag' );
-		// Add support for custom logo
-		add_theme_support( 'custom-logo' );
+		// // Add support for custom logo
+        // TODO: Add logo support
+		// add_theme_support( 'custom-logo' );
 
         register_nav_menus( array(
             'primary-menu' => 'Primary Menu'
