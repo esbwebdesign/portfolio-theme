@@ -1,4 +1,7 @@
 <?php
+/**
+ * Formats posts for display
+ */
 
 declare(strict_types=1);
 
@@ -7,7 +10,15 @@ class Esb_Format_Post {
     // Dependency injection
     public function __construct(private Esb_Html_Helper $html_helper) {}
 
-    private function format_taxonomy_inline(bool|array $items) {
+    private function format_taxonomy_inline(bool|array $items): string {
+        /**
+         * Format taxonomoy inline for use in post cards.
+         * 
+         * @param bool|array     $items     Array of taxonomy items. Will be false if no items are present.
+         * 
+         * @return string        Returns formatted HTML with the tags or categories list
+         */
+        
         // Set default condition
         $output = '';
 
@@ -63,11 +74,13 @@ class Esb_Format_Post {
         return $output;
     }
 
-    private function format_post_data(bool $show_excerpt): array {
+    private function format_post_data(bool $excerpt_only): array {
         /**
          * Formats the inner HTML components of a post (such as title, content, etc)
          * 
-         * @return array        Returns associative array of formatted post content
+         * @param bool      $excerpt_only   Whether to show the excerpt instead of the full text.
+         * 
+         * @return array    Returns associative array of formatted post content
          */
 
         
@@ -92,7 +105,7 @@ class Esb_Format_Post {
         // Get the post title
         $post_title = get_the_title();
         // Format post title as a link if in preview mode
-        if ($show_excerpt) {
+        if ($excerpt_only) {
             $post_title = $html_helper->create_html_tag(
                 tag_type: 'a',
                 inner_html: $post_title,
@@ -105,11 +118,11 @@ class Esb_Format_Post {
         // Using apply filters fixes lets line breaks appear correctly
         // in excerpts, but still ensures that this function always
         // returns a string
-        $post_body = ($show_excerpt) ? apply_filters('the_excerpt', get_the_excerpt()) : get_the_content();
+        $post_body = ($excerpt_only) ? apply_filters('the_excerpt', get_the_excerpt()) : get_the_content();
 
         // Set the read more link as null, or format if 
         $post_read_more = null;
-        if ($show_excerpt) {
+        if ($excerpt_only) {
             $post_read_more = $html_helper->create_html_tag(
                 tag_type: 'a',
                 inner_html: 'Read More...',
@@ -117,6 +130,7 @@ class Esb_Format_Post {
             );
         };
     
+        // Return an array of post data
         return array(
             'title' => $post_title,
             'content' => $post_body,
@@ -127,11 +141,19 @@ class Esb_Format_Post {
         );
     }
 
-    function format_post(int $base_indent = 0, bool $show_excerpt = false): string {
+    public function format_post(int $base_indent = 0, bool $excerpt_only = false): string {
+        /**
+         * Formats the post
+         * 
+         * @param int       $base_indent        Base tabs to use when indenting HTML. Default 0.
+         * @param bool      $excerpt_only       Whether to show only the excerpt. Default false.
+         * 
+         * @return string   Returns formatted HTML for post.
+         */
 
         $html_helper = $this->html_helper;
         
-        $post_data = $this->format_post_data($show_excerpt);
+        $post_data = $this->format_post_data($excerpt_only);
 
         // Handle sections that can be omitted to avoid unnecessary white space in code
         $read_more_line = ($post_data['read_more']) ? $html_helper->indent($base_indent + 2) . '<p>' . $post_data['read_more'] . '</p>' . N : '';

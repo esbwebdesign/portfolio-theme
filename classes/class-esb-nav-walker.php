@@ -137,40 +137,4 @@ class Esb_Nav_Walker extends Walker_Nav_Menu {
         $output .= $this->html_helper->indent($this->base_indent + $depth) . '</ul>';
 	}
 
-    // public function create_html_tag(
-    //     string $tag_type, 
-    //     bool $return_str = true,
-    //     string $inner_html = '',
-    //     array $ids = array(),
-    //     array $classes = array(),
-    //     array $attr = array()
-    // ): string|array {
-    // /**
-    //  * Creates an HTML tag with the specified parameters
-    //  * 
-    //  * @param string    $tag_type    Type of html tag. Required.
-    //  * @param bool      $return_str  Whether to return as string or array. Default true returns as string. False returns associative array.
-    //  * @param string    $inner_html  Content to go within tag. Default is empty string.
-    //  * @param array     $ids         Array of IDs to apply to tag. Keys will be ignored. Default (empty array) will omit ID statement.
-    //  * @param array     $classes     Array of classes to apply to tag. Keys will be ignored. Default (empty array) will omit class statement.
-    //  * @param array     $attr        Array of attribtues to apply to tag. Associative array required to work properly. Keys will be used as attribute type and value as attribute value.
-
-    
-    // private function parse_args(object $args): void {
-    //     /**
-    //      * Parse any custom values that are expected from the $args values and adds them as class
-    //      * properties.
-    //      * 
-    //      * @param object            $args               Arguments to parse.
-    //      */
-        
-    //     // If the base indent argument was provided, set it.  Otherwise, use a fallback of 0.
-    //     if (isset( $args->base_indent )) {
-    //         $this->base_indent = (int)$args->base_indent;
-    //     } else {
-    //         $this->base_indent = 0;
-    //     }
-        
-    // }
-
 }

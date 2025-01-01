@@ -21,6 +21,7 @@ if (!function_exists('esb_dependency_setup')) {
         // I've opted not to since that might make it harder to troubleshoot if
         // a necessary file was removed from that directory.
         $required_files = array(
+            get_stylesheet_directory() . '/classes/class-esb-format-pagination.php',
             get_stylesheet_directory() . '/classes/class-esb-format-post.php',
             get_stylesheet_directory() . '/classes/class-esb-html-helper.php',
             get_stylesheet_directory() . '/classes/class-esb-nav-walker.php',
