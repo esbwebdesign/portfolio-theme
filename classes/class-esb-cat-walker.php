@@ -7,7 +7,19 @@ declare(strict_types=1);
 
 class Esb_Cat_Walker extends Walker_Category {
 
-    public function __construct(private int $base_indent = 0) {}
+    // Dependency injection
+    public function __construct(private Esb_Html_Helper $html_helper, private int $add_indent = 0) {
+        /**
+         * @param Esb_Html_Helper       $html_helper        Esb_Html_Helper that contains HTML helper functions
+         * @param int|null              $add_indent         If set, adds extra spacing to the base indent set in the HTML helper.
+         *                                                  Useful in cases where the walker is nested inside other things using the same helper.
+         */
+
+        // Sets the base indent for the walker
+        // Equal to the base indent in the HTML helper, plus any additional indentation
+        $this->base_indent = $this->html_helper->base_indent + $add_indent;
+        
+    }
 
     private function get_friendly_url(WP_Term $data_object): string {
         /**
@@ -36,11 +48,25 @@ class Esb_Cat_Walker extends Walker_Category {
          * @param int                   $current_object_id  Current object ID, but not passed in by default.
          */
 
-        // echo var_dump($data_object);
+        // Build link
+        $a = $this->html_helper->create_html_tag(
+            tag_type: 'a',
+            inner_html: $data_object->name . ' (' . $data_object->category_count . ')',
+            classes: array('text-dark', 'esb-hover-line-only'),
+            attr: array(
+                'href' => $this->get_friendly_url($data_object)
+            )
+        );
 
-        $a_start = '<a class="text-dark esb-hover-line-only" href="' . $this->get_friendly_url($data_object) . '">';
+        // Build list item (as array so can remove last item)
+        $li = $this->html_helper->create_html_tag(
+            tag_type: 'li',
+            return_str: false,
+            inner_html: $a
+        );
 
-        $output .= str_repeat(T, $this->base_indent + $depth) . '<li>' . $a_start . $data_object->name . ' (' . $data_object->category_count . ')'. '</a>';
+        // Indent and add element
+        $output .= str_repeat(T, $this->base_indent + $depth) . implode('', array_slice($li, 0, 2));
     }
 
     public function start_lvl( &$output, $depth = 0, $args = array() ) {
@@ -53,10 +79,17 @@ class Esb_Cat_Walker extends Walker_Category {
          * @param null|array            $args               Additional arguments.
          */
 
-        $output .= N . str_repeat(T, $this->base_indent + $depth) . '<ul class="ms-3 p-0 esb-no-bullets">' . N;
+        // Assemble ul tag
+        $ul = $this->html_helper->create_html_tag(
+            tag_type: 'ul',
+            return_str: false,
+            classes: array('ms-3', 'p-0', 'esb-no-bullets')
+        );
+
+        $output .= N . str_repeat(T, $this->base_indent + $depth) . $ul['start'] . N;
 
     }
-
+    
 	public function end_lvl( &$output, $depth = 0, $args = null ) {
         /**
          * End of each level beyond the top level.  Abstract class in extending class, so much match that format
@@ -73,5 +106,3 @@ class Esb_Cat_Walker extends Walker_Category {
 	}
     
 }
-
-// text-dark esb-hover-line-only
