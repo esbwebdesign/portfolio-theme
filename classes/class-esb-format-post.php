@@ -130,7 +130,7 @@ class Esb_Format_Post {
             );
         };
     
-        // Return an array of post data
+        // Return an array of post html
         return array(
             'title' => $post_title,
             'content' => $post_body,

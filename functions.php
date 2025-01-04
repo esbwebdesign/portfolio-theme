@@ -21,11 +21,18 @@ if (!function_exists('esb_dependency_setup')) {
         // I've opted not to since that might make it harder to troubleshoot if
         // a necessary file was removed from that directory.
         $required_files = array(
+            get_stylesheet_directory() . '/inc/constant.php', // Constants
+
+            get_stylesheet_directory() . '/classes/abstract-esb-format-tax.php', // Abstract class
+            
+            get_stylesheet_directory() . '/classes/class-esb-nav-walker.php', // Navigation walker
+            get_stylesheet_directory() . '/classes/class-esb-cat-walker.php', // Category walker
+
+            get_stylesheet_directory() . '/classes/class-esb-format-cats.php',
             get_stylesheet_directory() . '/classes/class-esb-format-pagination.php',
             get_stylesheet_directory() . '/classes/class-esb-format-post.php',
+            get_stylesheet_directory() . '/classes/class-esb-format-sidebar.php',
             get_stylesheet_directory() . '/classes/class-esb-html-helper.php',
-            get_stylesheet_directory() . '/classes/class-esb-nav-walker.php',
-            get_stylesheet_directory() . '/inc/constant.php',
         );
         
         // Require files

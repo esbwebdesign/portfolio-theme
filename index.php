@@ -6,7 +6,7 @@ get_header();
 
 ?>
 					<h1 class="my-3">All Posts</h1>
-					<div class="col-12 col-lg-9">
+					<div class="col-12 <?php echo count(get_categories() + get_tags()) ? 'col-lg-9' : ''; ?>">
 <?php
 
 if ( have_posts() ) {
@@ -23,23 +23,14 @@ if ( have_posts() ) {
 	// If there are multiple pages, create a Pagination Formatter object
 	$pagination_formatter = new Esb_Format_Pagination($wp_query);
 ?>
-					<nav aria-label="Page Navigation">
-						<ul class="pagination">
-<?php echo $pagination_formatter->format_links(7); ?>
-						</ul>
-					</nav>
+						<nav aria-label="Page Navigation">
+							<ul class="pagination justify-content-center">
+<?php echo $pagination_formatter->format_links(8); ?>
+							</ul>
+						</nav>
+					</div>
 <?php
-// }
 
-?>
-					</div>
-					<div class="col-12 col-lg-3">
-						<div class="card mb-3">
-							<div class="card-body">
-								<p>Sidebar goes here</p>
-							</div>
-						</div>
-					</div>
-<?php
+get_sidebar();
 
 get_footer();

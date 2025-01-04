@@ -14,3 +14,7 @@ a.esb-hover-line-only {
 a.esb-hover-line-only:hover {
   text-decoration: underline;
 }
+
+.esb-no-bullets li {
+  list-style-type: none;
+}

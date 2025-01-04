@@ -1,149 +1,194 @@
 <?php
+/**
+ * Formats pagination for display
+ */
 
 declare(strict_types=1);
 
-// // Get list of pagination links as objects
-// // From here: https://developer.wordpress.org/reference/functions/paginate_links/#comment-3862
-// function wpdocs_get_paginated_links( $query ) : array {
-//     // When we're on page 1, 'paged' is 0, but we're counting from 1,
-//     // so we're using max() to get 1 instead of 0
-//     $currentPage = max( 1, get_query_var( 'paged', 1 ) );
-
-//     // This creates an array with all available page numbers, if there
-//     // is only *one* page, max_num_pages will return 0, so here we also
-//     // use the max() function to make sure we'll always get 1
-//     $pages = range( 1, max( 1, $query->max_num_pages ) );
-
-//     // Now, map over $pages and return the page number, the url to that
-//     // page and a boolean indicating whether that number is the current page
-//     return array_map( function( $page ) use ( $currentPage ) {
-//         return ( object ) array(
-//             "isCurrent" => $page == $currentPage,
-//             "page" => intval($page),
-//             "url" => get_pagenum_link( $page )
-//         );
-//     }, $pages );
-// }
-
 class Esb_Format_Pagination {
 
-    // Dependency injection
-    public function __construct(private WP_Query $query) {}
+    private int $max_pag_links;
 
-    private function pag_links_to_array(): array {
+    // Dependency injection
+    public function __construct(private WP_Query $query, int $max_pag_links = 4) {
         /**
-         * Creates an a array of pagination link data.
-         * Modified from here: https://developer.wordpress.org/reference/functions/paginate_links/#comment-3862
-         * 
-         * @return array    Returns an array of objects with information about each page link, including
-         *                  whether the current page is the current one.
+         * @param WP_Query      $query              Reference to the current query
+         * @param int           $max_pag_links      Maximum number of links to show without a gap. Default 6. Minimum 4.
          */
 
-        // Alias the query property for use in this function
-        $query = $this->query;
+        // Ensure that the maximium number of links is even
+        if ($max_pag_links % 2 != 0) {
+            $max_pag_links -= 1;
+        }
 
-        // The paged key in the $wp_query variable works oddly--it shows 0 for the first page
-        // but then 2 for the second, etc.  Using max fixes that issue.  If the paged key isn't set
-        // (e.g. if pagination isn't necessary), falls back to 1.
-        $current_page = max(1, $query->query_vars['paged'] ?? 1);
+        // Make sure that the number of links is at least 4
+        $this->max_pag_links = max($max_pag_links, 4);
 
-        // Creates a range that has all possible page numbers.  Guarantees that range will at least
-        // contain 1 because max_num_pages is 0 if pagination isn't necessary.
-        $pages = range(1, max(1, $query->max_num_pages));
+        // Get the current page
+        $this->current_page = max(1, $this->query->query_vars['paged'] ?? 1);
 
-        // Creates an array of objects with information about each page link
-        $pag_arr = array_map( function($page) use ($current_page) {
+        // Check if this is the first page
+        $this->is_first_page = $this->current_page === 1;
+
+        // Check if this is the last page
+        $this->is_last_page = $this->current_page === $this->query->max_num_pages;
+
+    }
+    
+
+    private function map_pages_by_num(array $page_range, $current_page): array {
+        /**
+         * Uses the page range provided to return an array of objects with information about those pages 
+         * to be used in pagination.
+         * 
+         * @param array     $page_range     Array of pages to use as a map
+         * 
+         * @return array    Array of objects with page number, whether page is current, page URL; also indicates not placeholder
+         */
+
+        // Return an array of link data based on the page range passed into this function
+        return array_map( function($page) {
             return (object) array(
-                'page' => $page,
-                'is_current' => $page === $current_page,
-                'url' => get_pagenum_link($page)
+                'page_num' => $page,
+                'is_current' => $page === $this->current_page,
+                'url' => get_pagenum_link($page),
+                'is_placeholder' => false
             );
-        }, $pages);
+        }, $page_range);
 
-        return $pag_arr;
     }
 
-    public function format_links(int $base_indent = 0): string {
+    private function get_link_array(): array {
         /**
-         * Formats the pagination links
+         * Creates an array of objects with information about links and placeholders
          * 
-         * @param int       $base_indent        Base tabs to use when indenting HTML. Default 0.
-         * 
-         * @return string   Returns formatted HTML for pagination links.
+         * @return array    Array of objects with information needed to format pagination
          */
         
-        // Sets up the output
-	    $output = '';
+        // Alias references to properties
+        $query = $this->query;
+        $max_pag_links = $this->max_pag_links;
+        $current_page = $this->current_page;
 
-        // Get an array of pagination links with data
-        $pag_arr = $this->pag_links_to_array();
-	
-        // Get current page index
-        // Zero indexed to match with array of pagination links
-        $current_index = max(1, $this->query->query_vars['paged'] ?? 1) - 1;
+        // Get the number of pages
+        // Returns 0 if no pagination, so using max ensures that there's at least 1 page
+        $total_pages = max(1, $query->max_num_pages);
 
-        // Previous control (disables previous link on first page)
-        if ( $current_index === 0 ) {
-            $a = '<a class="page-link" tabindex="-1" aria-disabled="true">Previous</a>';
-            $output .= str_repeat(T, $base_indent) . '<li class="page-item disabled me-3">' . $a . '</li>' . N;
+        // If all pagination links can be shown, get the array of link info and return
+        if ($total_pages <= $this->max_pag_links) {
+            // Primary page range is all the pages
+            $page_range = range(1, $total_pages);
+            $link_array = $this->map_pages_by_num($page_range, $current_page);
+            return $link_array;
+        }
+
+        // If there are more pagination links than can be shown
+
+        // Create an object that will be used to mark where there's a gap placeholder
+        $gap_obj = (object) array(
+            'is_placeholder' => true
+        );
+
+        // If at the start of the range, show gap before last page
+        if ($current_page < $max_pag_links) {
+            // Primary page range is 1 to the max number of links that can be shown in a block
+            $page_range = range(1, $max_pag_links);
+            // Add a gap and then the final page
+            // Example: 1 2 3 4 5 6 ... 18
+            $link_array = array(
+                ...$this->map_pages_by_num($page_range, $current_page),
+                $gap_obj,
+                ...$this->map_pages_by_num(array($total_pages), $current_page),
+            );
+            return $link_array;
+        }
+
+        // If in the middle of the range, show gap at start and end
+        // Number of links to show by side of current link depends on maximum links to show
+        $number_side_links = ($max_pag_links - 2) / 2;
+        if ($current_page < $total_pages - $number_side_links - 1) {
+            // Primary page range centers on the current page, with the number of links above to either side
+            $page_range = range($current_page - $number_side_links, $current_page + $number_side_links);
+            // Center the current page and show the first and last page with gaps between
+            // Example: 1 ... 4 5 6 7 8 ... 18
+            $link_array = array(
+                ...$this->map_pages_by_num(array(1), $current_page),
+                $gap_obj,
+                ...$this->map_pages_by_num($page_range, $current_page),
+                $gap_obj,
+                ...$this->map_pages_by_num(array($total_pages), $current_page)
+            );
+            return $link_array;
+        }
+        
+        // If at the end (fallback condition), show gap after first page
+        // Primary page range is from one less than the maximum links that can be shown to the end of the pages
+        $page_range = range($total_pages - $max_pag_links + 1, $total_pages);
+        $link_array = array(
+            ...$this->map_pages_by_num(array(1), $current_page),
+            $gap_obj,
+            ...$this->map_pages_by_num($page_range, $current_page)
+        );
+        // Show the first page, then a gap, and then the final pages
+        // Example: 1 ... 13 14 15 16 17 18
+        return $link_array;
+    }
+    
+    public function format_links(int $base_indent = 0): string {
+        /**
+         * Formats pagination links and outputs HTML
+         * 
+         * @param $base_indent      int     Base indent for code indentation. Default 0.
+         * 
+         * @return string           Formatted HTML for pagination
+         */
+
+        // Set up starting output
+        $output = '';
+
+        // Get array of link data
+        $link_data = $this->get_link_array();
+
+        // Create previous page control (disabled on first page)
+        if ($this->is_first_page) {
+            $prev_ctrl = '<li class="page-item disabled"><a class="page-link" tabindex="-1" aria-disabled="true" aria-label="Previous"><span aria-hidden="true">&lt;</span></a></li>';
         } else {
-            $a = '<a class="page-link" href="' . $pag_arr[$current_index - 1]->url . '">Previous</a>';
-            $output .= str_repeat(T, $base_indent) . '<li class="page-item me-3">' . $a . '</li>' . N;
+            $prev_ctrl = '<li class="page-item"><a class="page-link" href="' . get_pagenum_link($this->current_page - 1) . '" aria-label="Previous"><span aria-hidden="true">&lt;</span></a></li>';
         }
 
-        // Page controls
-        foreach ( $pag_arr as $link ) {
-            $active = ($link->is_current) ? ' active' : '';
-            $a = '<a class="page-link" href="' . $link->url . '">' . $link->page . '</a>';
-            $output .= str_repeat(T, $base_indent) . '<li class="page-item' . $active . '">' . $a . '</li>' . N;
-        }
-
-        // Next control (disables previous link on last page)
-        if ( $current_index + 1 === count($pag_arr) ) {
-            $a = '<a class="page-link" tabindex="-1" aria-disabled="true" aria-label="Previous"><span aria-hidden="true">Next</span></a>';
-            $output .= str_repeat(T, $base_indent) . '<li class="page-item disabled ms-3">' . $a . '</li>' . N;
+        // Create next page control (disabled on last page)
+        if ($this->is_last_page) {
+            $next_ctrl = '<li class="page-item disabled"><a class="page-link" tabindex="-1" aria-disabled="true" aria-label="Next"><span aria-hidden="true">&gt;</span></a></li>';
         } else {
-            $a = '<a class="page-link" href="' . $pag_arr[$current_index + 1]->url . '" aria-label="Previous"><span aria-hidden="true">Next</span></a>';
-            $output .= str_repeat(T, $base_indent) . '<li class="page-item ms-3">' . $a . '</li>' . N;
+            $next_ctrl = '<li class="page-item"><a class="page-link" href="' . get_pagenum_link($this->current_page + 1) . '" aria-label="Next"><span aria-hidden="true">&gt;</span></a></li>';
         }
+
+        // Insert previous control
+        $output .= str_repeat(T, $base_indent) . $prev_ctrl . N;
+
+        // Insert page links and placeholders
+        foreach ($link_data as $page) {
+
+            // If the page isn't a gap placeholder, create the page link
+            if (!$page->is_placeholder) {
+                $a = '<a class="page-link" href="' . $page->url . '">' . $page->page_num . '</a>';
+                $active_class = ($page->is_current) ? ' active' : '';
+                $li = '<li class="page-item' . $active_class . '" aria-current="page">' . $a . '</li>';
+            // If it is, create the elipsis link
+            } else {
+                $a = '<a class="page-link border-0 bg-transparent text-dark" tabindex="-1" aria-label="ellipses" aria-disabled="true">...</a>';
+                $li = '<li class="page-item disabled">' . $a . '</li>';
+            }
+
+            // Insert the pagination item
+            $output .= str_repeat(T, $base_indent) . $li . N;
+        }
+
+        // Insert next control
+        $output .= str_repeat(T, $base_indent) . $next_ctrl . N;
 
         return $output;
+
     }
 
 }
-
-// Disabled: <a class="page-link" tabindex="-1" aria-disabled="true" aria-label="Previous"><span aria-hidden="true">&laquo;</span></a>
-// Enabled: <a class="page-link" href="https://esbportfolio.com/" aria-label="Previous"><span aria-hidden="true">&laquo;</span></a>
-
-// Disabled: <li class="page-item disabled"><a ... /a></li>
-// Enabled: <li class="page-item"><a ... /a></li>
-
-	// // Previous control (disables previous link on first page)
-	// if ( $current_index === 0 ) {
-	// 	$a = '<a class="page-link" tabindex="-1" aria-disabled="true" aria-label="Previous"><span aria-hidden="true">&laquo;</span></a>';
-	// 	$output .= '<li class="page-item disabled">' . $a . '</li>' . N;
-	// } else {
-	// 	$a = '<a class="page-link" href="' . $links[$current_index - 1]->url . '" aria-label="Previous"><span aria-hidden="true">&laquo;</span></a>';
-	// 	$output .= '<li class="page-item">' . $a . '</li>' . N;
-	// }
-
-    // public function create_html_tag(
-    //     string $tag_type, 
-    //     bool $return_str = true,
-    //     string $inner_html = '',
-    //     array $ids = array(),
-    //     array $classes = array(),
-    //     array $attr = array()
-    // ): string|array {
-    // /**
-    //  * Creates an HTML tag with the specified parameters
-    //  * 
-    //  * @param string    $tag_type    Type of html tag. Required.
-    //  * @param bool      $return_str  Whether to return as string or array. Default true returns as string. False returns associative array.
-    //  * @param string    $inner_html  Content to go within tag. Default is empty string.
-    //  * @param array     $ids         Array of IDs to apply to tag. Keys will be ignored. Default (empty array) will omit ID statement.
-    //  * @param array     $classes     Array of classes to apply to tag. Keys will be ignored. Default (empty array) will omit class statement.
-    //  * @param array     $attr        Array of attribtues to apply to tag. Associative array required to work properly. Keys will be used as attribute type and value as attribute value.
-    //  * 
-    //  * @return string|array          Returns associative array or html string
-    //  */
